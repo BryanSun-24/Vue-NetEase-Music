@@ -1,2 +1,2 @@
 # NetEase Music
-This is a recopy of NetEase Music Software
+This is a personal remake of NetEase Music Software
