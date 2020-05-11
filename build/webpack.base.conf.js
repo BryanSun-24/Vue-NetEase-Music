@@ -26,7 +26,9 @@ module.exports = {
     extensions: ['.js', '.vue', '.json'],
     alias: {
       'vue$': 'vue/dist/vue.esm.js',
-      '@': resolve('src'),
+      'src': resolve('src'), //src 来代替src folder 的位置 所以 在import的时候可以直接src/components
+      'components': resolve('src/components'),
+      'common': resolve('src/common')
     }
   },
   module: {
