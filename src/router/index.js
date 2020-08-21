@@ -11,7 +11,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'HelloWorld',
+      name: 'default',
+      redirect: '/recommend'
+    },
+    {
+      path: '/recommend',
       component: Recommend
     },
     {

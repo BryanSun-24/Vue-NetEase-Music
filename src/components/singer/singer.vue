@@ -1,6 +1,6 @@
 <template>
     <div class="singer">
-        
+        <p>wajdo</p>
     </div>
 </template>
 <script>
