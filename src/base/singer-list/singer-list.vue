@@ -100,10 +100,13 @@ export default {
         },
         scrollY(newY){
             const listHeight = this.listHeight
+
+            if(newY > 0) { this.currentIndex = 0; return }
+
             for(let i = 0;i < listHeight.length; i++){
                 let heightMax = listHeight[i+1]
                 let heightMin = listHeight[i]
-                if(!heightMax || -newY > heightMin && -newY < heightMax){
+                if(!heightMax || -newY >= heightMin && -newY < heightMax){
                     this.currentIndex = i
                     return
                 }

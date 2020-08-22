@@ -1,9 +1,11 @@
 <template>
-    <div class="singer">
-        <app-singer-list :data="singerList">
+    <transition>
+        <div class="singer">
+            <app-singer-list :data="singerList">
 
-        </app-singer-list>
-    </div>
+            </app-singer-list>
+        </div>
+    </transition>
 </template>
 <script>
 import {getSingerList} from "../../api/singer"
@@ -79,6 +81,13 @@ export default {
 }
 </script>
 <style lang="stylus">
+    v-enter-active,.v-leave-active{
+        transition all 0.2s
+    }
+    v-enter, .v-leave-to {
+        transform  translate3d(50%, 0, 0)
+        opacity 0
+    }
     .singer{
         position fixed
         top 88px
