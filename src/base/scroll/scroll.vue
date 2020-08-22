@@ -12,7 +12,7 @@ export default {
     props:{
         probeType:{
             type: Number,
-            default: 1
+            default: 1 //当probeType 为1的时候，它就不是实时跟踪滚动状态
         },
         click:{
             type:Boolean,
@@ -21,6 +21,10 @@ export default {
         data:{
             type:Array,
             default: null
+        },
+        listenScroll:{
+            type: Boolean,
+            default: false
         }
     },
     mounted:function(){
@@ -37,6 +41,12 @@ export default {
                 probeType: this.probeType,
                 click: this.click
             })
+            if(this.listenScroll){
+                let _this = this
+                this.scroll.on('scroll', (place) =>{
+                    _this.$emit('scroll', place)
+                })
+            }
         },
         enable(){
             this.scroll && this.scroll.enable()
@@ -46,6 +56,12 @@ export default {
         },
         refresh(){
             this.scroll && this.scroll.refresh()
+        },
+        scrollTo(){
+            this.scroll && this.scroll.scrollTo.apply(this.scroll, arguments)
+        },
+        scrollToElement(){
+            this.scroll && this.scroll.scrollToElement.apply(this.scroll, arguments)
         }
     },
     components:{

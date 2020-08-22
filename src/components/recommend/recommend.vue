@@ -10,7 +10,7 @@
                     <ul>
                         <li class="item" v-for="item of recommendList" :key="item.id">
                             <div class="icon">
-                                <img :src="item.picUrl" alt="">
+                                <img v-lazy="item.picUrl" alt="">
                             </div>
                             <p class="count">
                                 <i class="iconfont icon-search"></i>
@@ -27,13 +27,16 @@
                     <ul>
                         <li class="item" v-for="item of recommendMusic" :key="item.id">
                             <div class="icon">
-                                <img :src="item.song.album.picUrl" alt="">
+                                <img v-lazy="item.song.album.picUrl" alt="">
                             </div>
                             <p class="text">{{item.name}}</p>
                             <p class="singer">{{item.song.artists[0].name}}</p>
                         </li>
                     </ul>
                 </div>
+           </div>
+           <div class="loading-content" v-if="!recommendList.length">
+               <app-loading></app-loading>
            </div>
         </app-scroll>
     </div>    
@@ -44,6 +47,7 @@ import slider from "../../base/slider/slider.vue"
 import {getRecommendList, getRecommendMusic} from "../../api/recommend"
 import {ERR_OK} from "../../common/js/config"
 import scroll from "../../base/scroll/scroll.vue"
+import loading from "../../base/loading/loading"
 export default {
     data:function(){
         return {
@@ -53,7 +57,8 @@ export default {
     },
     components:{
         'app-slider': slider,
-        'app-scroll': scroll
+        'app-scroll': scroll,
+        'app-loading': loading
     },
     created(){
         this._getRecommendList();
@@ -90,6 +95,12 @@ export default {
         width : 100%
         height : 100%
         overflow : hidden
+    }
+    .loading-content{
+        position absolute
+        width 100%
+        top 50%
+        transform translateY(-50%)
     }
     .slider-wrapper{
         width : 100%

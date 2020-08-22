@@ -7,6 +7,11 @@ import VueAwesomeSwiper from 'vue-awesome-swiper'
 // If you use Swiper 6.0.0 or higher
 import 'swiper/swiper-bundle.css'
 
+import VueLazyload from 'vue-lazyload'
+ 
+Vue.use(VueLazyload, {
+  loading: require('common/image/default.png')
+})
 
 //import 'swiper/css/swiper.css'
 
