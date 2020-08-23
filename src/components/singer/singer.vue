@@ -1,9 +1,8 @@
 <template>
     <transition>
         <div class="singer">
-            <app-singer-list :data="singerList">
-
-            </app-singer-list>
+            <app-singer-list :data="singerList" @select="selectSinger"></app-singer-list>
+            <router-view></router-view>
         </div>
     </transition>
 </template>
@@ -11,6 +10,7 @@
 import {getSingerList} from "../../api/singer"
 import Singer from "../../common/js/singer"
 import SingerList from "../../base/singer-list/singer-list"
+import {mapMutations} from 'vuex'
 const HOT_NAME = "hot"
 const HOT_NAME_LENGTH = 10
 export default {
@@ -24,6 +24,12 @@ export default {
         this._getSingerList()
     },
     methods:{
+        selectSinger(singer){ //emit 传回来的
+            this.$router.push({
+                path:`/singer/${singer.id}`
+            })
+            this.setSinger(singer)
+        },
         _getSingerList(){
             getSingerList().then((res) => {
                 if(res.code == 0){
@@ -73,7 +79,10 @@ export default {
                 return a.title.charCodeAt(0) - b.title.charCodeAt(0) // a > b 的时候true, a < b 的时候false 然后排序
             })
             return hot.concat(nohot)
-        }
+        },
+        ...mapMutations({
+            setSinger: 'SET_SINGER'
+        })
     },
     components:{
         'app-singer-list' : SingerList

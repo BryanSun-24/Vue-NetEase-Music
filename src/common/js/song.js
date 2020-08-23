@@ -11,10 +11,11 @@ export default class Song{
 
 export function settingSong(musicData){
 	return new Song({
-		id: musicData.id,
+		id: musicData.songid,
+		mid: musicData.songmid,
 		singer: musicData.ar[0].name,
-		name: musicData.name,
-		album: musicData.name,
-		image: musicData.al.picUrl
+		name: musicData.songname,
+		album: musicData.albumname,
+		image: `https://y.gtimg.cn/music/photo_new/T001R150x150M000${musicData.albumid}.jpg?max_age=2592000`
 	})
 }

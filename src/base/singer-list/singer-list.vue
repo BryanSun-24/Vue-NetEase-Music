@@ -7,7 +7,7 @@
             <li v-for="list of data" class="list" ref="list">
                 <h1 class="list-title">{{list.title}}</h1>
                 <ul>
-                    <li v-for="item of list.lists" class="list-item">
+                    <li v-for="item of list.lists" class="list-item" @click="selectItem(item)">
                         <img :src="item.avatar" class="avatar" alt="">
                         <span class="name">{{item.name}}</span>
                     </li>
@@ -63,6 +63,9 @@ export default {
         'app-scroll': scroll
     },
     methods:{
+        selectItem(item){
+            this.$emit('select', item)
+        },
         scrollTouchStart(e){
             let targetIndex = getIndex(e.target,'index')
             let firstPlace = e.touches[0]
