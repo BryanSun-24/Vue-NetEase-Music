@@ -40,7 +40,7 @@ export default {
                 }
             })
         },
-        _singerDetailSettings(){
+        _singerDetailSettings(list){
             let result = []
             list.forEach(item => {
                 let {musicData} = item

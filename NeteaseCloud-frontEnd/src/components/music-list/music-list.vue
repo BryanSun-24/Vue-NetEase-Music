@@ -4,11 +4,22 @@
             <span class="iconback"> &lt; </span>
         </div>
         <h1 class="title">{{title}}</h1>
-        <div class="bg-image" :style="bgStyle"></div>
+        <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
+        <app-scroll class="list" ref="list">
+            <div class="song-list-wrapper">
+                <app-song-list :songs="songs"></app-song-list>
+            </div>
+            <div class="loading-container" v-show="!songs.length">
+                <app-loading></app-loading>
+            </div>
+        </app-scroll>
     </div>    
 </template>
 
 <script>
+import SongList from "../../base/song-list/song-list"
+import Scroll from "../../base/scroll/scroll"
+import loading from "../../base/loading/loading"
 export default {
     props:{
         title: {
@@ -33,6 +44,14 @@ export default {
         bgStyle(){
             return `background-image:url(${this.bgImage})`
         }
+    },
+    components:{
+        'app-song-list': SongList,
+        'app-scroll': Scroll,
+        'app-loading': loading
+    },
+    mounted(){
+        this.$refs.list.$el.style.top = `${this.$refs.bgImage.clientHeight}px`
     }
 }
 </script>
@@ -82,5 +101,21 @@ export default {
         background-size cover
         transform-origin top
     }
-    
+    .list{
+        position fixed
+        top 0
+        bottom 0
+        width 100%
+        background $color-background
+        overflow hidden
+    }
+    .song-list-wrapper{
+        padding 20px 30px
+    }
+    .loading-container{
+        position absolute
+        width 100%
+        top 50%
+        transform translateY(-50%)
+    }
 </style>

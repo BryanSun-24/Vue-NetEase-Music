@@ -4,7 +4,7 @@
             <app-scroll class="topList">
                 <div>
                     <ul>
-                        <li v-for="item of rankList" :key="item.id" class="item">
+                        <li v-for="item of rankList" :key="item.id" class="item" @click="selectItem(item)">
                             <div class="icon">
                                 <img :src="item.coverImgUrl" alt="" width="100" height="100">
                             </div>
@@ -16,6 +16,7 @@
                             </ul>
                         </li>
                     </ul>
+                    <router-view></router-view>
                 </div>
             </app-scroll>
         </div>
@@ -26,6 +27,8 @@
 import {getRank} from "../../api/rank"
 import {ERR_OK} from "../../common/js/config"
 import scroll from "../../base/scroll/scroll.vue"
+import {mapMutations} from 'vuex'
+
 const RANK_NUMBER = [0,1,2,3,4,22,23]
 export default {
     name: "rank",
@@ -46,6 +49,15 @@ export default {
                     list.rank = res.data.playlist.tracks.slice(0,3)
                 })
             }
+        },
+        ...mapMutations({
+            setRank: 'SET_RANK'
+        }),
+        selectItem(item){
+            this.$router.push({
+                path: `/rank/${item.id}`
+            })
+            this.setRank(item)
         }
     },
     components:{

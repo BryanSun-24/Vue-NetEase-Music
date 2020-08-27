@@ -1,9 +1,9 @@
 <template>
     <div class="music-header">
         <h1 class="text">NetEase Music</h1>
-        <div class="search">
+        <router-link tag="div" to="/search" class="search">
             <i class="iconfont icon-search"></i>
-        </div>
+        </router-link>
     </div>
 </template>
 <script>

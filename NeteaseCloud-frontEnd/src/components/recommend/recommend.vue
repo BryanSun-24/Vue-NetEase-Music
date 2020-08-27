@@ -8,7 +8,7 @@
                 <div class="recommend-list">
                     <h1 class="list-title">Recommend List</h1>
                     <ul>
-                        <li class="item" v-for="item of recommendList" :key="item.id">
+                        <li class="item" v-for="item of recommendList" :key="item.id" @click="selectItem(item)">
                             <div class="icon">
                                 <img v-lazy="item.picUrl" alt="">
                             </div>
@@ -38,6 +38,7 @@
            <div class="loading-content" v-if="!recommendList.length">
                <app-loading></app-loading>
            </div>
+           <router-view></router-view>
         </app-scroll>
     </div>    
 </template>
@@ -48,6 +49,7 @@ import {getRecommendList, getRecommendMusic} from "../../api/recommend"
 import {ERR_OK} from "../../common/js/config"
 import scroll from "../../base/scroll/scroll.vue"
 import loading from "../../base/loading/loading"
+import {mapMutations} from 'vuex'
 export default {
     data:function(){
         return {
@@ -78,7 +80,16 @@ export default {
                     this.recommendMusic = res.data.result.splice(1)
                 }
             })
-        }
+        },
+        selectItem(item){
+            this.$router.push({
+                path: `/recommend/${item.id}`
+            })
+            this.setRecommend(item)
+        },
+        ...mapMutations({
+            setRecommend:'SET_RECOMMEND'
+        })
     }
 }
 </script>
