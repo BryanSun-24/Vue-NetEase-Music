@@ -7,6 +7,7 @@
 <script>
 import {mapGettters, mapMutations, mapGetters} from 'vuex'
 import MusicList from "../../components/music-list/music-list"
+import { settingSong } from '../../common/js/song'
 export default {
     data(){
         return {
@@ -35,18 +36,18 @@ export default {
             }
             let result = []
             list.forEach((item) => {
-                result.push(this._formatSong(item))
+                result.push(settingSong(item))
             });
             this.songs = result
         },
-        _formatSong(musicData){
-            return {
-                id: musicData.id,
-                singer: musicData.ar,
-                name: musicData.name,
-                album: musicData.name
-            }
-        }
+        // _formatSong(musicData){
+        //     return {
+        //         id: musicData.id,
+        //         singer: musicData.ar,
+        //         name: musicData.name,
+        //         album: musicData.name
+        //     }
+        // }
     },
     components:{
         'app-music-list': MusicList

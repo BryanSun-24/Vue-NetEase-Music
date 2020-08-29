@@ -9,6 +9,7 @@ import {mapGetters} from 'vuex'
 import {getRecommendDetail} from '../../api/recommend'
 import {ERR_OK} from '../../common/js/config'
 import MusicList from "../../components/music-list/music-list"
+import { settingSong } from '../../common/js/song'
 export default {
     data(){
         return {
@@ -31,6 +32,7 @@ export default {
     },
     methods:{
         _getRecommendDetail(){
+            if(!this.recommend.id) { this.$router.push('/recommend'); return}
             getRecommendDetail(this.recommend.id).then((res) => {
                 if(res.status === ERR_OK){
                     this.songs = this._recommendDetailSetting(res.data.playlist.tracks)
@@ -41,18 +43,18 @@ export default {
         _recommendDetailSetting(list){
             let result = []
             list.forEach(musicData => {
-                result.push(this._formatSong(musicData))
+                result.push(settingSong(musicData))
             });
             return result
         },
-        _formatSong(musicData){
-            return {
-                id: musicData.id,
-                singer: musicData.ar[0].name,
-                name: musicData.name,
-                album: musicData.name
-            }
-        }
+        // _formatSong(musicData){
+        //     return {
+        //         id: musicData.id,
+        //         singer: musicData.ar[0].name,
+        //         name: musicData.name,
+        //         album: musicData.name
+        //     }
+        // }
     },
     components:{
         'app-music-list': MusicList

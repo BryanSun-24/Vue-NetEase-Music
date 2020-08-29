@@ -3,3 +3,15 @@ export const SET_SINGER = 'SET_SINGER'
 export const SET_RECOMMEND = 'SET_RECOMMEND'
 
 export const SET_RANK = 'SET_RANK'
+
+export const SET_PLAYING = 'SET_PLAYING'
+
+export const SET_FULL_SCREEN = 'SET_FULL_SCREEN'
+
+export const SET_PLAYLIST = 'SET_PLAYLIST'
+
+export const SET_SEQUENCE_LIST = 'SET_SEQUENCE_LIST'
+
+export const SET_PLAY_MODE = 'SET_PLAY_MODE'
+
+export const SET_CURRENT_INDEX = 'SET_CURRENT_INDEX'

@@ -7,7 +7,7 @@
         <div class="bg-image" :style="bgStyle" ref="bgImage"></div>
         <app-scroll class="list" ref="list">
             <div class="song-list-wrapper">
-                <app-song-list :songs="songs"></app-song-list>
+                <app-song-list @select = "selectItem" :songs="songs"></app-song-list>
             </div>
             <div class="loading-container" v-show="!songs.length">
                 <app-loading></app-loading>
@@ -20,6 +20,7 @@
 import SongList from "../../base/song-list/song-list"
 import Scroll from "../../base/scroll/scroll"
 import loading from "../../base/loading/loading"
+import {mapActions} from 'vuex'
 export default {
     props:{
         title: {
@@ -38,7 +39,16 @@ export default {
     methods:{
         back(){
             this.$router.back() // go back to last level
-        }
+        },
+        selectItem(item,index){
+            this.clickPlay({
+                list: this.songs,
+                index: index
+            })
+        },
+        ...mapActions([
+            'clickPlay'
+        ])
     },
     computed:{
         bgStyle(){

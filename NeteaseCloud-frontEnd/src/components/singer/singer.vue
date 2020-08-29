@@ -13,6 +13,7 @@ import SingerList from "../../base/singer-list/singer-list"
 import {mapMutations} from 'vuex'
 const HOT_NAME = "hot"
 const HOT_NAME_LENGTH = 10
+const pinyin = require('pinyin')
 export default {
     name: "singer",
     data(){
@@ -32,10 +33,19 @@ export default {
         },
         _getSingerList(){
             getSingerList().then((res) => {
-                if(res.code == 0){
-                    this.singerList = this._singerListSettings(res.data.list)
-                    //console.log(this.singerList)
-                }
+                let list = res.data.artists
+                list.map(item=>{
+                    let py= pinyin(item.name[0], {
+                        style:pinyin.STYLE_FIRST_LETTER
+                    })
+                    item.Findex = py[0][0].toUpperCase()
+                })
+                this.singerList = this._singerListSettings(list)
+                console.log(this.singerList)
+                // if(res.code == 0){
+                //     this.singerList = this._singerListSettings(res.data.list)
+                //     //console.log(this.singerList)
+                // }
             })
         },
         _singerListSettings(list){
@@ -48,8 +58,9 @@ export default {
             list.forEach((item,index) => {
                 if (index < HOT_NAME_LENGTH){
                     page.hot.lists.push(new Singer({
-                        id: item.Fsinger_mid,
-                        name: item.Fsinger_name,
+                        id: item.id,
+                        name: item.name,
+                        avatar: item.img1v1Url
                     }))
                 }
                 const key = item.Findex
@@ -60,8 +71,9 @@ export default {
                     }
                 }
                 page[key].lists.push(new Singer({
-                    id: item.Fsinger_mid,
-                    name: item.Fsinger_name,
+                        id: item.id,
+                        name: item.name,
+                        avatar: item.img1v1Url
                 }))
             })
             //console.log(page)

@@ -35,18 +35,16 @@ export default {
                 this.$router.push('/singer')
             }
             getSingerDetail(this.singer.id).then((res)=>{
-                if(res.code === 0){
-                    this.songs = this._singerDetailSettings(res.data.list)
+                if(res.status === 200){
+                    this.songs = this._singerDetailSettings(res.data.hotSongs)
+                    console.log(this.songs)
                 }
             })
         },
         _singerDetailSettings(list){
             let result = []
-            list.forEach(item => {
-                let {musicData} = item
-                if(musicData.songid && musicData.albummid){
-                    result.push(settingSong(musicData))
-                }
+            list.forEach((item) => {
+                result.push(settingSong(item))
             });
             return result
         }
