@@ -2,7 +2,7 @@
     <app-scroll :data="result" class="search-result"
     :pullup = "pullup" @scrollToEnd = "searchMore">
         <ul class="search-list">
-            <li v-for="item of result" class="search-item">
+            <li v-for="(item,index) of result" class="search-item" @click="selectItem(item, index)">
                 <div class="icon">
                     <i class="icon-music"></i>
                 </div>
@@ -17,6 +17,7 @@
 </template>
 
 <script>
+import {mapActions} from 'vuex'
 import {getSearchResult} from '../../api/search'
 import Scroll from "../../base/scroll/scroll"
 import Loading from "../../base/loading/loading"
@@ -46,6 +47,8 @@ export default {
             getSearchResult(this.query, this.page, this.showSinger, perpage).then((res) => {
                 if(res.code === 0){
                     this.result = this._searchSetting(res.data)
+                    console.log("rersadawd")
+                    console.log(this.result)
                     this._checkResult(res.data)
                 }
             })
@@ -72,6 +75,15 @@ export default {
             if(!song.list.length){
                 this.hasMore = false
             }
+        },
+         ...mapActions([
+            'clickPlay'
+        ]),
+        selectItem(item, index){
+            this.clickPlay({
+                list: this.result,
+                index: index
+            })
         }
     }, 
     watch:{

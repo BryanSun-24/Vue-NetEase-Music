@@ -25,12 +25,14 @@
                 <div class="bottom">
                     <div class="progress-box">
                         <span class="time time-left">{{format(currentTime)}}</span>
-                        <div class="progress-bar"></div>
+                        <div class="progress-bar">
+                            <app-progress-bar :percent="percent" @percentChange="percentChange"></app-progress-bar>
+                        </div>
                         <span class="time time-right">{{format(duration)}}</span>
                     </div>
                     <div class="settings">
-                        <div class="icon i-left">
-                            <i class="iconfont icon-sequence"></i>
+                        <div class="icon i-left" @click="changeMode">
+                            <i class="iconfont" :class="iconMode"></i>
                         </div>
                         <div class="icon i-left">
                             <i class="iconfont icon-prev" @click="prev"></i>
@@ -58,27 +60,36 @@
                     <p class="desc">{{currentSong.singer}}</p>
                 </div>
                 <div class="control" @click.stop = "togglePlay"> <!--这里加 click.stop 是为了让这个点击事件和mini-player那的大点击事件区分开来-->
-                    <i class="iconfont" :class="minIcon"></i>
+                    <app-progress-circle :radius="32" :percent="percent">
+                        <i class="iconfont iconMin" :class="minIcon"></i>
+                    </app-progress-circle>
                 </div>
                 <div class="control">
                     <i class="iconfont icon-playlist"></i>
                 </div>
             </div>
         </transition>
-        <audio ref="audio" @timeupdate="updateTime"></audio>
+        <audio ref="audio" @timeupdate="updateTime" @ended="end"></audio>
     </div>
 </template>
 
 <script>
+import {playMode} from "../../common/js/config"
+import ProgressCircle from "../../base/progress-circle/progress-circle"
+import progressBar from "../../base/progress-bar/progress-bar"
 import {mapGetters} from 'vuex'
 import {mapMutations} from 'vuex'
 import {getSong} from "../../api/song"
+import {shuffle} from "../../common/js/util"
+import {getLyric} from "../../api/song"
 export default {
     data(){
         return {
             url: '',
             currentTime: 0,
-            duration: 0
+            duration: 0,
+            percent: 0,
+            lyricList: null
         }
     },
     computed:{
@@ -87,7 +98,9 @@ export default {
             'playlist',
             'currentSong',
             'playing',
-            'currentIndex'
+            'currentIndex',
+            'mode',
+            'sequenceList'
         ]),
         playIcon(){
             return this.playing ? 'icon-pause' : 'icon-play'
@@ -97,6 +110,15 @@ export default {
         },
         cdRotate(){
             return this.playing ? 'play' : 'play pause'
+        },
+        iconMode(){
+            if(this.mode === playMode.sequence){
+                return 'icon-sequence'
+            } else if(this.mode === playMode.loop){
+                return 'icon-loop'
+            } else {
+                return 'icon-random'
+            }
         }
     },
     methods:{
@@ -106,9 +128,17 @@ export default {
         ...mapMutations({
             setFullScreen: 'SET_FULL_SCREEN',
             setPlaying: 'SET_PLAYING',
-            setCurrentIndex: 'SET_CURRENT_INDEX'
+            setCurrentIndex: 'SET_CURRENT_INDEX',
+            setPlayMode: 'SET_PLAY_MODE',
+            setPlaylist: 'SET_PLAYLIST'
         }),
+        _getLyric(id){
+            getLyric(id).then((res) => {
+                this.lyricList = res.data.lrc.lyric
+            })
+        },
         _getSong(id){
+            console.log(id)
             getSong(id).then((res) => {
                 this.url = res.data.data[0].url
             })
@@ -144,6 +174,42 @@ export default {
             let second = time % 60
             if(second < 10) { second = '0' + second}
             return minute + ':' + second
+        },
+        percentChange(percent){
+            const Time = this.duration * percent
+            this.$refs.audio.currentTime = Time.toFixed(2)
+            if(!this.playing){
+                this.togglePlay()
+            }
+        },
+        changeMode(){
+            const mode = (this.mode + 1) % 3
+            this.setPlayMode(mode)
+            let list = null
+            if(mode === playMode.random){
+                list = shuffle(this.sequenceList)
+            } else{
+                list = this.sequenceList
+            }
+            this._currentSetting(list)
+            this.setPlaylist(list)
+        },
+        _currentSetting(list){
+            let index = list.findIndex((item) => {
+                return item.id === this.currentSong.id
+            })
+            this.setCurrentIndex(index)
+        },
+        end(){
+            if(this.mode === playMode.loop){
+                this.loop()
+            } else {
+                this.next()
+            }
+        },
+        loop(){
+            this.$refs.audio.currentTime = 0
+            this.$refs.audio.play()
         }
     },
     watch:{
@@ -151,13 +217,21 @@ export default {
             this._getSong(newValue.id)
         },
         url(newUrl){
+            this._getLyric(this.currentSong.id)
             this.$refs.audio.src = newUrl
             this.$refs.audio.play()
             this.setPlaying(true)
             setTimeout(()=>{
                 this.duration = this.$refs.audio.duration
-            }, 100)
+            }, 150)
+        },
+        currentTime(){
+            this.percent = this.currentTime / this.duration
         }
+    },
+    components:{
+        'app-progress-bar': progressBar,
+        'app-progress-circle': ProgressCircle
     }
 }
 </script>
@@ -368,6 +442,11 @@ export default {
             left -5px
             top -3px
             font-size 30px
+        .iconMin
+            font-size 32px
+            position absolute
+            left 0
+            top 0
     .max-enter-active, .max-leave-active {
         transition 0.4s
     }
@@ -380,6 +459,7 @@ export default {
     .min-enter,.min-leave-to {
         opacity 0
     }
+    
 
 @keyframes rotate 
     0%
