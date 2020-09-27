@@ -1,7 +1,7 @@
 # NetEase Music
 This is a personal remake of NetEase Music Software using Vue.js
 
-To start: </br />
+To start: <br />
     1. Download or git clone to your local <br />
     2. open NeteaseCloudMusicApi <br />
     3. open terminal and run <br />
