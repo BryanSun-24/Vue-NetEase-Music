@@ -18,3 +18,13 @@ export function settingSong(musicData){
 		image: musicData.al.picUrl
 	})
 }
+
+export function searchSettingSong(result){
+	return new Song({
+		id: result.id,
+		singer: result.artists[0].name,
+		name: result.name,
+		album: result.album.name,
+		image: result.artists.img1v1Url
+	})
+}

@@ -7,8 +7,8 @@
                     <i class="icon-music"></i>
                 </div>
                 <div class="name">
-                    <p class="song">{{item.songname}}</p>
-                    <div class="singer">{{item.singer[0].name}}</div>
+                    <p class="song">{{item.name}}</p>
+                    <div class="singer">{{item.artists[0].name}}</div>
                 </div>
             </li>
             <app-loading v-show="hasMore"></app-loading>
@@ -21,6 +21,7 @@ import {mapActions} from 'vuex'
 import {getSearchResult} from '../../api/search'
 import Scroll from "../../base/scroll/scroll"
 import Loading from "../../base/loading/loading"
+import { searchSettingSong } from '../../common/js/song'
 const perpage = 30
 
 export default {
@@ -45,18 +46,17 @@ export default {
     methods:{
         _getSearchResult(){
             getSearchResult(this.query, this.page, this.showSinger, perpage).then((res) => {
-                if(res.code === 0){
-                    this.result = this._searchSetting(res.data)
-                    console.log("rersadawd")
+                if(res.data.code === 200){
+                    this.result = this._searchSetting(res.data.result)
                     console.log(this.result)
-                    this._checkResult(res.data)
+                    //this._checkResult(res.data.result)
                 }
             })
         },
         _searchSetting(data){
             let ret = []
-            if(data.song){
-                ret = ret.concat(data.song.list)
+            if(data.songs){
+                ret = ret.concat(data.songs)
             }
             return ret
         },
@@ -65,13 +65,20 @@ export default {
             this.page ++ //搜索下一页的数据
             getSearchResult(this.query, this.page, this.showSinger, perpage).then((res) => {
                 if(res.code === 0){
-                    this.result = this.result.concat(this._searchSetting(res.data))
-                    this._checkResult(res.data)
+                    this.result = this.result.concat(_SettingSong(res.data.result))
+                    this._checkResult(res.data.result)
                 }
             })
         },
+        _SettingSong(data){
+            let result = []
+            data.forEach(musicData => {
+                result.push(searchSettingSong(musicData))
+            });
+            return result
+        },
         _checkResult(data){
-            const song = data.song
+            const song = data.songs
             if(!song.list.length){
                 this.hasMore = false
             }
