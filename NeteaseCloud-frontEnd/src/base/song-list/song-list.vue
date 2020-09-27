@@ -54,5 +54,8 @@ export default {
     .desc{
         color $color-text-d
         margin-top 4px
+        text-overflow ellipsis
+        overflow hidden
+        white-space nowrap
     }
 </style>

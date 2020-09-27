@@ -13,14 +13,23 @@
                     <h1 class="title">{{currentSong.name}}</h1>
                     <h2 class="subtitle">{{currentSong.singer}}</h2>
                 </div>
-                <div class="middle">
-                    <div class="middle-left">
+                <div class="middle" @click="changeMiddle">
+                    <div class="middle-left" v-show="currentShow === 'cd'">
                         <div class="cd-box">
                             <div class="cd" :class="cdRotate">
                                 <img class="image" :src="currentSong.image" alt="">
                             </div>
                         </div>
                     </div>
+                    <app-scroll class="middle-right" v-show="currentShow === 'lyric'" :data="lyricList.lines" ref="lyricList">
+                        <div class="lyric-wrapper">
+                            <div class="currentLyric">
+                                <p class="text" ref="lyricLine" v-for="(line, index) of lyricList.lines" :class="{'current': currentLineNum === index}">
+                                {{line.txt}}
+                                </p>
+                            </div>
+                        </div>
+                    </app-scroll>
                 </div>
                 <div class="bottom">
                     <div class="progress-box">
@@ -82,6 +91,9 @@ import {mapMutations} from 'vuex'
 import {getSong} from "../../api/song"
 import {shuffle} from "../../common/js/util"
 import {getLyric} from "../../api/song"
+import Lyric from 'lyric-parser'
+import Scroll from '../../base/scroll/scroll'
+
 export default {
     data(){
         return {
@@ -89,7 +101,9 @@ export default {
             currentTime: 0,
             duration: 0,
             percent: 0,
-            lyricList: null
+            lyricList: '',
+            currentLineNum: 0,
+            currentShow: 'cd'
         }
     },
     computed:{
@@ -134,8 +148,29 @@ export default {
         }),
         _getLyric(id){
             getLyric(id).then((res) => {
-                this.lyricList = res.data.lrc.lyric
+                this.lyricList = new Lyric(res.data.lrc.lyric, this.handleLyric)
+                if(this.playing){
+                    this.lyricList.play()
+                }
+                console.log(this.lyricList)
             })
+        },
+        handleLyric({lineNum, txt}){
+            this.currentLineNum = lineNum
+            console.log(lineNum)
+            if(lineNum > 5){
+                let lineTarget = this.$refs.lyricLine[lineNum - 5]
+                this.$refs.lyricList.scrollToElement(lineTarget, 1000)
+            } else {
+                this.$refs.lyricList.scrollTo(0,0,1000)
+            }
+        },
+        changeMiddle(){
+            if(this.currentShow === 'cd'){
+                this.currentShow = 'lyric'
+            } else {
+                this.currentShow = 'cd'
+            }
         },
         _getSong(id){
             console.log(id)
@@ -147,6 +182,9 @@ export default {
             const audio = this.$refs.audio
             this.setPlaying(!this.playing)
             this.playing ? audio.play() : audio.pause()
+            if(this.lyricList){
+                this.lyricList.togglePlay()
+            }
         },
         open(){
             this.setFullScreen(true)
@@ -181,6 +219,9 @@ export default {
             if(!this.playing){
                 this.togglePlay()
             }
+            if(this.lyricList){
+                this.lyricList.seek(currentTime * 1000) //当我们拖拽进度条，重制歌词的位置在time * 1000因为动画时间是1000毫秒
+            }
         },
         changeMode(){
             const mode = (this.mode + 1) % 3
@@ -210,11 +251,17 @@ export default {
         loop(){
             this.$refs.audio.currentTime = 0
             this.$refs.audio.play()
+            if(this.lyricList){
+                this.lyricList.seek() // seek() means reset lyric
+            }
         }
     },
     watch:{
         currentSong(newValue){
             this._getSong(newValue.id)
+            if(this.lyricList){
+                this.lyricList.stop()
+            }
         },
         url(newUrl){
             this._getLyric(this.currentSong.id)
@@ -231,7 +278,8 @@ export default {
     },
     components:{
         'app-progress-bar': progressBar,
-        'app-progress-circle': ProgressCircle
+        'app-progress-circle': ProgressCircle,
+        'app-scroll': Scroll
     }
 }
 </script>
@@ -327,6 +375,29 @@ export default {
         width 100%
         height 0
         padding-top 80%
+    }
+    .middle-right{
+        display inline-block
+        position absolute
+        top 0
+        vertical-align top
+        width 100%
+        height 100%
+        overflow hidden
+    }
+    .lyric-wrapper{
+        width 80%
+        margin 0 auto
+        overflow hidden
+        text-align center
+    }
+    p.text{
+        line-height 40px
+        color $color-text-ggg
+        font-size $font-size-medium
+    }
+    p.current{
+        color #FFFFFF
     }
     .cd-box{
         position absolute
