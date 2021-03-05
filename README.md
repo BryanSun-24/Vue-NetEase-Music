@@ -5,6 +5,7 @@ To start: <br />
     1. Download or git clone to your local <br />
     2. open NeteaseCloudMusicApi <br />
     3. open terminal and run <br />
+        npm install <br />
         node app.js <br />
     4. open NeteaseCloud-frontEnd <br />
     5. open terminal and run  // (make sure you have node.js installed) <br />
